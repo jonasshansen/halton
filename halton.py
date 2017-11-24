@@ -103,11 +103,11 @@ if __name__ == "__main__":
 	
 	numpoints = 1e3
 	
-	# Halton sequence of maxdim points:
+	# Halton sequence of numpoints number of points:
 	sequence = halton(numpoints, 2)
 	coords_quasi = sequence.evaluate()
 	
-	# Random (Mersenne Twister) sequence of maxdim points:
+	# Random (Mersenne Twister) sequence of numpoints number of points:
 	coords_pseudo = np.asarray([[random.random(),random.random()] for i in range(np.int(numpoints))])
 	
 	coordstypes = [coords_quasi, coords_pseudo]
