@@ -1,31 +1,56 @@
 import math
 import numpy as np
 
-class halton(object):
+class halton():
 	
-	def __init__(self, indices, bases):
+	def __init__(self, num = None, dim = None, indices = None, bases = None):
 		"""
 		Halton quasi-random number generator.
 		
+		Example usage:
+		
+		.. code-block:: python
+		
+		   sequence = halton(10, 3)
+		   out = sequence.evaluate()
+		   
+		Here out is the coordinates of the first 10 points in the 
+		three-dimensional Halton sequence with bases 2, 3 and 4.
+		   
 		Parameters
 		----------
-		indices : numpy array
-			Index values for the Halton sequence.
-		bases : numpy array
-			Dimensional bases for the Halton sequence. Default is 2.
+		num : int
+			Number of samples for the Halton sequence, starting at index 0.
+		dim : int
+			Dimensions of the Halton sequence, starting at 1D using base 2.
+		indices : numpy array or list
+			Specific indices of the Halton sequence.
+		bases : numpy array or list
+			Specific bases of the Halton sequence.
 			
 		Methods:
 		--------
 		evaluate :
-			Returns
-		evaluateone(index, base) :
-			Returns coordinate
+			Returns a numpy array of values of the Halton sequences in bases
+			and at indices provided in the class initialization.
+		evaluateone(i, b) :
+			Returns the value of the Halton sequence of dimensional basis ``b`` 
+			at index ``i``.
 			
-		Author: Jonas Svenstrup Hansen, November 2017, jonas.svenstrup@gmail.com
+		Author: Jonas Svenstrup Hansen, November 2017 jonas.svenstrup@gmail.com
 		"""
-		self.indices = np.asarray(indices)
-		self.bases   = np.asarray(bases)
-		self.values = self.evaluate()
+		if ((num != None) or (dim != None)) and ((indices != None) or (bases != None)):
+			raise ValueError('Parameters num and dim or indices and bases cannot be supplied simultaneously.')
+		elif (num == None) and (dim == None) and (indices == None) and (bases == None):
+			raise ValueError('Parameters num and dim or indices and bases must be supplied.')
+		elif ((indices != None) and (bases != None)):
+			self.indices = np.asarray(indices)
+			self.bases   = np.asarray(bases)
+		elif (num != None) and (dim != None):
+			self.indices = np.asarray(range(num))
+			self.bases   = np.asarray(range(dim)) + 2
+		else:
+			raise ValueError('Unknown input error. Parameters num and dim or indices and bases must be supplied.')
 		
 	def evaluate(self):
 		"""
@@ -34,7 +59,7 @@ class halton(object):
 		result : numpy array
 			Values of the Halton sequence for indices (rows) and bases (cols).
 		"""
-		result = np.zeros([len(self.indices), len(self.bases)])
+		result = np.zeros([self.indices.size, self.bases.size])
 		for (i, idx) in enumerate(self.indices):
 			for (j, base) in enumerate(self.bases):
 				result[i,j] = self.evaluateone(idx, base)
@@ -99,4 +124,3 @@ if __name__ == "__main__":
 		ax.set_xlim([0, 1])
 		ax.set_ylim([0, 1])
 	plt.show()
-	
