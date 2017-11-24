@@ -48,9 +48,10 @@ class halton():
 			self.bases   = np.asarray(bases)
 		elif (num != None) and (dim != None):
 			self.indices = np.asarray(range(np.int(num)))
-			self.bases   = np.asarray(range(np.int(dim))) + 2
+			self.bases   = self.run_gen_primes(np.int(dim))
 		else:
 			raise ValueError('Unknown input error. Parameters num and dim or indices and bases must be supplied.')
+		
 		
 	def evaluate(self):
 		"""
@@ -64,6 +65,7 @@ class halton():
 			for (j, base) in enumerate(self.bases):
 				result[i,j] = self.evaluateone(idx, base)
 		return result
+	
 	
 	def evaluateone(self, i, b):
 		"""
@@ -94,6 +96,62 @@ class halton():
 			i = math.floor(i/b)
 			
 		return r
+	
+	
+	def run_gen_primes(self, maxprime):
+		x = set()
+		y = 0
+		a = self.gen_primes()
+		while y < maxprime:
+		  x |= set([a.__next__()])
+		  y+=1
+		
+		# Convert to numpy array:
+		out = np.array(list(x))
+		
+		# Return the sorted numpy array:
+		out.sort()
+		return out
+	
+	
+	def gen_primes(self):
+	    """ 
+		Generate an infinite sequence of prime numbers.
+		
+		Sieve of Eratosthenes
+		Code by David Eppstein, UC Irvine, 28 Feb 2002
+		http://code.activestate.com/recipes/117119/
+	    """
+	    # Maps composites to primes witnessing their compositeness.
+	    # This is memory efficient, as the sieve is not "run forward"
+	    # indefinitely, but only as long as required by the current
+	    # number being tested.
+	    #
+	    D = {}
+	    
+	    # The running integer that's checked for primeness
+	    q = 2
+	    
+	    while True:
+	        if q not in D:
+	            # q is a new prime.
+	            # Yield it and mark its first multiple that isn't
+	            # already marked in previous iterations
+	            # 
+	            yield q
+	            D[q * q] = [q]
+	        else:
+	            # q is composite. D[q] is the list of primes that
+	            # divide it. Since we've reached q, we no longer
+	            # need it in the map, but we'll mark the next 
+	            # multiples of its witnesses to prepare for larger
+	            # numbers
+	            # 
+	            for p in D[q]:
+	                D.setdefault(p + q, []).append(p)
+	            del D[q]
+	        
+	        q += 1
 
 
 if __name__ == "__main__":
@@ -101,14 +159,14 @@ if __name__ == "__main__":
 	import matplotlib.pyplot as plt
 	plt.close('all')
 	
-	numpoints = 1e3
+	num = 1e3
 	
-	# Halton sequence of numpoints number of points:
-	sequence = halton(numpoints, 2)
+	# Halton sequence of num number of points:
+	sequence = halton(num, 2)
 	coords_quasi = sequence.evaluate()
 	
-	# Random (Mersenne Twister) sequence of numpoints number of points:
-	coords_pseudo = np.asarray([[random.random(),random.random()] for i in range(np.int(numpoints))])
+	# Random (Mersenne Twister) sequence of num number of points:
+	coords_pseudo = np.asarray([[random.random(),random.random()] for i in range(np.int(num))])
 	
 	coordstypes = [coords_quasi, coords_pseudo]
 	names = ['Quasirandom (Halton)', 'Pseudorandom (Mersenne Twister)']
