@@ -47,8 +47,8 @@ class halton():
 			self.indices = np.asarray(indices)
 			self.bases   = np.asarray(bases)
 		elif (num != None) and (dim != None):
-			self.indices = np.asarray(range(num))
-			self.bases   = np.asarray(range(dim)) + 2
+			self.indices = np.asarray(range(np.int(num)))
+			self.bases   = np.asarray(range(np.int(dim))) + 2
 		else:
 			raise ValueError('Unknown input error. Parameters num and dim or indices and bases must be supplied.')
 		
@@ -101,16 +101,14 @@ if __name__ == "__main__":
 	import matplotlib.pyplot as plt
 	plt.close('all')
 	
-	maxdim = 1e3
-	bases = [2, 3]
-	index = np.arange(0, maxdim, 1)
+	numpoints = 1e3
 	
 	# Halton sequence of maxdim points:
-	sequence = halton(index, bases)
-	coords_quasi = sequence.values
+	sequence = halton(numpoints, 2)
+	coords_quasi = sequence.evaluate()
 	
 	# Random (Mersenne Twister) sequence of maxdim points:
-	coords_pseudo = np.asarray([[random.random(),random.random()] for i in range(1000)])
+	coords_pseudo = np.asarray([[random.random(),random.random()] for i in range(np.int(numpoints))])
 	
 	coordstypes = [coords_quasi, coords_pseudo]
 	names = ['Quasirandom (Halton)', 'Pseudorandom (Mersenne Twister)']
