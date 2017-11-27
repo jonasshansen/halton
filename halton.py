@@ -2,43 +2,55 @@ import math
 import numpy as np
 
 class halton():
+	"""
+	Halton quasi-random number generator.
+	
+	Example usage:
+	
+	.. code-block:: python
+	
+	   sequence = halton(10, 3)
+	   out = sequence.evaluate()
+	   
+	Here out is the coordinates of the first 10 points in the 
+	three-dimensional Halton sequence with bases 2, 3 and 4.
+	   
+	Parameters
+	----------
+	num : int
+		Number of samples for the Halton sequence, starting at index 0.
+	dim : int
+		Dimensions of the Halton sequence, starting at 1D using base 2.
+	indices : numpy array or list
+		Specific indices of the Halton sequence.
+	bases : numpy array or list
+		Specific bases of the Halton sequence.
+		
+	Methods:
+	--------
+	evaluate :
+		Returns a numpy array of values of the Halton sequences in bases
+		and at indices provided in the class initialization.
+	evaluateone(i, b) :
+		Returns the value of the Halton sequence of dimensional basis ``b`` 
+		at index ``i``.
+		
+	Credits:
+	--------
+	Written by Jonas Svenstrup Hansen, November 2017 
+	jonas.svenstrup@gmail.com
+	
+	Algorithm implemented in method ``evaluateone()`` is from pseudocode in:
+	https://en.wikipedia.org/wiki/Halton_sequence
+		
+	Content of method ``gen_primes()`` is a Sieve of Eratosthenes written by
+		
+		David Eppstein, UC Irvine, 28 Feb 2002
+		http://code.activestate.com/recipes/117119/
+	"""
 	
 	def __init__(self, num = None, dim = None, indices = None, bases = None):
-		"""
-		Halton quasi-random number generator.
 		
-		Example usage:
-		
-		.. code-block:: python
-		
-		   sequence = halton(10, 3)
-		   out = sequence.evaluate()
-		   
-		Here out is the coordinates of the first 10 points in the 
-		three-dimensional Halton sequence with bases 2, 3 and 4.
-		   
-		Parameters
-		----------
-		num : int
-			Number of samples for the Halton sequence, starting at index 0.
-		dim : int
-			Dimensions of the Halton sequence, starting at 1D using base 2.
-		indices : numpy array or list
-			Specific indices of the Halton sequence.
-		bases : numpy array or list
-			Specific bases of the Halton sequence.
-			
-		Methods:
-		--------
-		evaluate :
-			Returns a numpy array of values of the Halton sequences in bases
-			and at indices provided in the class initialization.
-		evaluateone(i, b) :
-			Returns the value of the Halton sequence of dimensional basis ``b`` 
-			at index ``i``.
-			
-		Author: Jonas Svenstrup Hansen, November 2017 jonas.svenstrup@gmail.com
-		"""
 		if ((num != None) or (dim != None)) and ((indices != None) or (bases != None)):
 			raise ValueError('Parameters num and dim or indices and bases cannot be supplied simultaneously.')
 		elif (num == None) and (dim == None) and (indices == None) and (bases == None):
